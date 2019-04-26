@@ -5,34 +5,26 @@ import Canvas from '../Canvas';
 
 export default class Draw extends Component {
   state = {
-    scale: 4,
+    scale: 12,
     size: 128,
-    color: "#ff0000",
-    pixels: [
-      {x: 10, y: 10, color: "#ff0000"},
-      {x: 20, y: 20, color: "#ff0000"},
-      {x: 30, y: 30, color: "#ff0000"},
-      {x: 40, y: 40, color: "#ff0000"},
-      {x: 50, y: 50, color: "#ff0000"},
-      {x: 60, y: 60, color: "#ff0000"},
-    ]
-  }
-
-  componentDidMount() {
-    const canvas = ReactDOM.findDOMNode(this.refs.canvas);
-
-    canvas.addEventListener('onmousedown', () => {
-
-    })
+    color: "#FF0000",
+    grid: {
+      toggle: true,
+      color: "#999"
+    },
+    pixels: []
   }
 
   handleEvent = (ev) => {
-    const canvas = ReactDOM.findDOMNode(this.refs.canvas);
-    const rect = canvas.getBoundingClientRect()
-    const [cX, cY] = [Math.floor(rect.left), Math.floor(rect.top)]
-    const [mX, mY] = [ev.clientX, ev.clientY]
-    const [absX, absY] = [(mX - cX), (mY - cY)]
-    const newPixel = {x: absX, y: absY, color: this.state.color}
+    // Thanks Allen! @allen-woods
+    const rect = ev.target.getBoundingClientRect()
+    const [w, h] = [(rect.right - rect.left), (rect.bottom - rect.top)]
+    const [cellW, cellH]  = [Math.floor(w / this.state.size), Math.floor(h / this.state.size)]
+    const [deltaX, deltaY] = [(ev.clientX - rect.left), (ev.clientY - rect.top)]
+    const [absX, absY] = [(Math.floor(deltaX / cellW) * cellW), (Math.floor(deltaY / cellH) * cellH)]
+
+    const newPixel = {x: absX + 0.5, y: absY + 0.5, color: this.state.color}
+    
     this.setState({pixels: [...this.state.pixels, newPixel]})
   }
 
@@ -48,15 +40,15 @@ export default class Draw extends Component {
   
   render() {
     return (
-    <Grid
-      item={true}
-    >
+    <Grid item={true}>
+      <Canvas pixels={this.state.pixels} size={this.state.size} />
       <Canvas 
         ref="canvas" 
         scale={this.state.scale} 
         size={(this.state.size*this.state.scale)} 
         pixels={this.state.pixels} 
         handleEvent={this.handleEvent}
+        grid={this.state.grid}
       />
     </Grid>
     )
