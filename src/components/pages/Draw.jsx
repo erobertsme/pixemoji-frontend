@@ -1,29 +1,47 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
 import Grid from '@material-ui/core/Grid';
 import Canvas from '../Canvas';
+import Preview from '../Preview';
+// import ColorSelector from ''
 
 export default class Draw extends Component {
   state = {
-    scale: 12,
-    size: 128,
+    scale: 10,
+    size: 64,
     color: "#FF0000",
+    isDrawing: false,
     grid: {
-      toggle: true,
-      color: "#999"
+      on: true,
+      color: "rgba(0,0,0,0.1)"
     },
     pixels: []
   }
 
-  handleEvent = (ev) => {
-    // Thanks Allen! @allen-woods
-    const rect = ev.target.getBoundingClientRect()
-    const [w, h] = [(rect.right - rect.left), (rect.bottom - rect.top)]
-    const [cellW, cellH]  = [Math.floor(w / this.state.size), Math.floor(h / this.state.size)]
-    const [deltaX, deltaY] = [(ev.clientX - rect.left), (ev.clientY - rect.top)]
-    const [absX, absY] = [(Math.floor(deltaX / cellW) * cellW), (Math.floor(deltaY / cellH) * cellH)]
+  toggleDrawing = (bool) => {
+    this.setState({isDrawing: bool})
+  }
 
-    const newPixel = {x: absX + 0.5, y: absY + 0.5, color: this.state.color}
+  handleEvent = (ev) => {
+    // console.log(ev)
+    // Thanks Allen! @allen-woods
+    const scale = this.state.scale
+    const rect = ev.target.getBoundingClientRect()
+    const [mouseX, mouseY] = [Math.floor(ev.clientX - rect.left), Math.floor(ev.clientY - rect.top)]
+    const [cellX, cellY] = [(Math.floor(mouseX / scale) * scale), (Math.floor(mouseY / scale) * scale)]
+
+    // console.log('w,h', w, h)
+    // console.log('mouseX,mouseY', mouseX, mouseY)
+    // console.log('cellX,cellY', cellX, cellY)
+
+    const newPixel = {x: cellX, y: cellY, color: this.state.color}
+
+    if (this.checkDuplicate(newPixel)) {
+      return
+    }
+
+    if (this.state.isDrawing) {
+      this.captureSkip()
+    }
     
     this.setState({pixels: [...this.state.pixels, newPixel]})
   }
@@ -37,17 +55,31 @@ export default class Draw extends Component {
     }
     this.setState({size: newSize})
   }
+
+  checkDuplicate = (newPixel) => {
+    const result = this.state.pixels.some(pixel => {
+      return (pixel.x === newPixel.x && pixel.y === newPixel.y && pixel.color === newPixel.color)
+    })
+    return result
+  }
+
+  captureSkip = () => {
+    const [secondLast, last] = this.state.pixels.slice(-2)
+    console.log("2nd last", secondLast, "Last", last)
+  }
   
   render() {
     return (
     <Grid item={true}>
-      <Canvas pixels={this.state.pixels} size={this.state.size} />
+      <Preview ref="preview" pixels={this.state.pixels} size={this.state.size} />
       <Canvas 
         ref="canvas" 
         scale={this.state.scale} 
         size={(this.state.size*this.state.scale)} 
         pixels={this.state.pixels} 
         handleEvent={this.handleEvent}
+        toggleDrawing={this.toggleDrawing}
+        isDrawing={this.state.isDrawing}
         grid={this.state.grid}
       />
     </Grid>

@@ -10,19 +10,26 @@ export default class Canvas extends Component {
 
   componentDidUpdate = () => {
     this.draw()
+    this.drawGrid()
   }
 
   draw = () => {
+    this.clearCanvas()
     let canvas = ReactDOM.findDOMNode(this.refs.canvas);
     let ctx = canvas.getContext('2d');
 
     this.props.pixels.forEach(pixel => {
       ctx.fillStyle = pixel.color;
-      ctx.fillRect(pixel.x, pixel.y, this.props.scale, this.props.scale);
+      ctx.fillRect(pixel.x, pixel.y, this.props.scale+1, this.props.scale+1);
     })
   }
 
   drawGrid = () => {
+    if (this.props.grid && !this.props.grid.on) {
+      this.clearCanvas()
+      this.draw()
+      return
+    }
     const lines = (this.props.size/this.props.scale)
     for (let i = 1; i < lines; i++) {
       let canvas = ReactDOM.findDOMNode(this.refs.canvas);
@@ -46,8 +53,37 @@ export default class Canvas extends Component {
       ctx.stroke()
     }
   }
+
+  handleMouseDown = (ev) => {
+    this.props.handleEvent(ev)
+    this.props.toggleDrawing(true)
+  }
+
+  handleMouseUp = () => {
+    this.props.toggleDrawing(false)
+  }
+
+  handleMouseMove = (ev) => {
+    if (this.props.isDrawing) {
+      this.props.handleEvent(ev)
+    }
+  }
+
+  clearCanvas = () => {
+    let canvas = ReactDOM.findDOMNode(this.refs.canvas);
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
   
   render() {
-    return (<canvas ref="canvas" height={this.props.size} width={this.props.size} onMouseDown={this.props.handleEvent} ></canvas>)
+    return (
+    <canvas 
+      ref="canvas" 
+      height={this.props.size} 
+      width={this.props.size} 
+      onMouseDown={this.handleMouseDown} 
+      onMouseUp={this.handleMouseUp} 
+      onMouseMove={this.handleMouseMove}
+    ></canvas>)
   }
 }
