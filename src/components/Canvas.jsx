@@ -18,9 +18,11 @@ export default class Canvas extends Component {
     let canvas = ReactDOM.findDOMNode(this.refs.canvas);
     let ctx = canvas.getContext('2d');
 
-    this.props.pixels.forEach(pixel => {
-      ctx.fillStyle = pixel.color;
-      ctx.fillRect(pixel.x, pixel.y, this.props.scale+1, this.props.scale+1);
+    this.props.pixels.forEach(pixelGroup => {
+      pixelGroup.forEach(pixel => {
+        ctx.fillStyle = pixel.color;
+        ctx.fillRect(pixel.x, pixel.y, this.props.scale+1, this.props.scale+1);
+      })
     })
   }
 

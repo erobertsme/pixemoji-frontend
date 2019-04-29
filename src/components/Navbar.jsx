@@ -6,10 +6,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import { AccountCircle, Brush } from '@material-ui/icons';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import Drawer from '@material-ui/core/Drawer';
+//import Drawer from '@material-ui/core/Drawer';
+//import List from '@material-ui/core/List';
+//import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 const styles = {
   root: {
@@ -57,6 +59,10 @@ class Navbar extends React.Component {
             <Typography variant="h6" color="inherit" className={classes.grow}>
               Pixemoji
             </Typography>
+
+            <IconButton color="inherit">
+              <Brush />
+            </IconButton>
 
             <IconButton
               aria-owns={open ? 'account-menu-appbar' : undefined}

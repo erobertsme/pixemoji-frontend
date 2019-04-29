@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Grid from '@material-ui/core/Grid';
 import Canvas from '../Canvas';
 import Preview from '../Preview';
+import { Undo, Redo } from '@material-ui/icons'
+import Button from '@material-ui/core/Button'
 // import ColorSelector from ''
 
 export default class Draw extends Component {
@@ -14,7 +16,8 @@ export default class Draw extends Component {
       on: true,
       color: "rgba(0,0,0,0.1)"
     },
-    pixels: []
+    pixels: [],
+    redo: []
   }
 
   toggleDrawing = (bool) => {
@@ -39,11 +42,17 @@ export default class Draw extends Component {
       return
     }
 
-    if (this.state.isDrawing) {
-      this.captureSkip()
+    if (this.state.isDrawing && this.state.pixels.length > 0) {
+      let lastPixel = this.state.pixels[this.state.pixels.length-1][this.state.pixels[this.state.pixels.length-1].length-1]
+      this.detectSkip(lastPixel, newPixel)
+      this.state.pixels[this.state.pixels.length-1].push(newPixel)
+      this.setState({pixels: [...this.state.pixels]})
+    } else {
+      this.setState({pixels: [...this.state.pixels, [newPixel]]})
     }
+
+    this.setState({redo: []})
     
-    this.setState({pixels: [...this.state.pixels, newPixel]})
   }
 
   changeSize = () => {
@@ -56,22 +65,67 @@ export default class Draw extends Component {
     this.setState({size: newSize})
   }
 
-  checkDuplicate = (newPixel) => {
-    const result = this.state.pixels.some(pixel => {
-      return (pixel.x === newPixel.x && pixel.y === newPixel.y && pixel.color === newPixel.color)
+  changeScale = (newScale) => {
+    const prevScale = this.state.scale
+    this.state.pixels.map(pixelGroup => {
+      return pixelGroup.map(pixel => {
+        return {
+          x: (pixel.x / prevScale) * newScale, 
+          y: (pixel.y / prevScale) * newScale, 
+          color: pixel.color
+        }
+      })
     })
-    return result
   }
 
-  captureSkip = () => {
-    const [secondLast, last] = this.state.pixels.slice(-2)
-    console.log("2nd last", secondLast, "Last", last)
+  checkDuplicate = (newPixel) => {
+    const result = this.state.pixels.map(pixelGroup => {
+      return pixelGroup.some(pixel => {
+        return (pixel.x === newPixel.x && pixel.y === newPixel.y && pixel.color === newPixel.color)
+      })
+    })
+    return result.some(i => i === true)
+  }
+
+  detectSkip = (lastPixel, newPixel) => {
+    const [lastX, newX] = [lastPixel.x, newPixel.x]
+    const [lastY, newY] = [lastPixel.y, newPixel.y]
+    
+    const diffX = Math.abs(lastX - newX) / this.state.scale
+    const diffY = Math.abs(lastY - newY) / this.state.scale
+    
+    if (diffX && diffY && (diffX > 1 || diffY > 1)) {
+      console.log('Skip detected!', lastPixel, newPixel)
+      console.log(`${lastPixel.y} - ${newPixel.y} / ${lastPixel.x} - ${newPixel.x}`)
+      console.log('Slope: ', lastPixel.y - newPixel.y / lastPixel.x - newPixel.x)
+    } 
+  }
+
+  undo = () => {
+    if (this.state.pixels.length > 0) {
+      const removed = this.state.pixels.splice(-1)
+      this.setState({redo: [...this.state.redo, removed[0]]})
+    }
+  }
+
+  redo = () => {
+    if (this.state.redo.length > 0) {
+      const readded = this.state.redo.splice(-1)
+      this.setState({pixels: [...this.state.pixels, readded[0]]})
+    }
   }
   
   render() {
     return (
     <Grid item={true}>
-      <Preview ref="preview" pixels={this.state.pixels} size={this.state.size} />
+      <Preview 
+        ref="preview" 
+        pixels={this.state.pixels} 
+        size={this.state.size} 
+        scale={this.state.scale} 
+      />
+      <Button onClick={this.undo}><Undo /></Button>
+      <Button onClick={this.redo}><Redo /></Button>
       <Canvas 
         ref="canvas" 
         scale={this.state.scale} 
