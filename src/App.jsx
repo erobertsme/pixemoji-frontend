@@ -20,7 +20,8 @@ function App() {
       <main>
         <Grid container={true} alignItems="center" justify="center">
         <Router>
-          <Route exact path="/" component={Home} />
+          {/* <Route exact path="/" component={Home} /> */}
+          <Route exact path="/" component={Draw} />
           <Route path="/draw" component={Draw} />
           <Route path="/browse" component={Browse} />
           <Route path="/emoji/:id" component={Emoji} />
