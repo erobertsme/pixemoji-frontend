@@ -4,17 +4,19 @@ import Canvas from '../Canvas';
 import Preview from '../Preview';
 import { Undo, Redo } from '@material-ui/icons'
 import Button from '@material-ui/core/Button'
+import { SketchPicker } from 'react-color';
 // import ColorSelector from ''
 
 export default class Draw extends Component {
   state = {
     scale: 10,
     size: 64,
-    color: "#FF0000",
+    color: 'rgba(255,0,0,1)',
+    backgroundColor: '',
     isDrawing: false,
     grid: {
       on: true,
-      color: "rgba(0,0,0,0.1)"
+      color: 'rgba(0,0,0,0.1)'
     },
     pixels: [],
     redo: []
@@ -88,17 +90,37 @@ export default class Draw extends Component {
   }
 
   detectSkip = (lastPixel, newPixel) => {
-    const [lastX, newX] = [lastPixel.x, newPixel.x]
-    const [lastY, newY] = [lastPixel.y, newPixel.y]
     
-    const diffX = Math.abs(lastX - newX) / this.state.scale
-    const diffY = Math.abs(lastY - newY) / this.state.scale
+    const deltaY = lastPixel.y - newPixel.y
+    const deltaX = lastPixel.x - newPixel.x
+
     
-    if (diffX && diffY && (diffX > 1 || diffY > 1)) {
-      console.log('Skip detected!', lastPixel, newPixel)
-      console.log(`${lastPixel.y} - ${newPixel.y} / ${lastPixel.x} - ${newPixel.x}`)
-      console.log('Slope: ', lastPixel.y - newPixel.y / lastPixel.x - newPixel.x)
-    } 
+    if (Math.max(Math.abs(deltaY), Math.abs(deltaX)) > this.state.scale) {
+      if (Math.abs(deltaY) > this.state.scale && Math.abs(deltaX) > this.state.scale) {
+        
+        let skippedPixel = {x: 0, y: 0, color: this.state.color}
+        for (let i = 0; i < lastPixel.x; i++) {
+          
+        }
+      } else if (Math.abs(deltaY)) {
+
+      } else if (Math.abs(deltaX)) {
+
+      }
+      console.log(deltaY, deltaX)
+    }
+    
+    // const [lastX, newX] = [lastPixel.x, newPixel.x]
+    // const [lastY, newY] = [lastPixel.y, newPixel.y]
+
+    // const diffX = Math.abs(lastX - newX) / this.state.scale
+    // const diffY = Math.abs(lastY - newY) / this.state.scale
+    
+    // if (diffX && diffY && (diffX > 1 || diffY > 1)) {
+    //   console.log('Skip detected!', lastPixel, newPixel)
+    //   console.log(`(${lastPixel.y} - ${newPixel.y}) / (${lastPixel.x} - ${newPixel.x})`)
+    //   console.log('Slope: ', (lastPixel.y - newPixel.y) / (lastPixel.x - newPixel.x))
+    // } 
   }
 
   undo = () => {
@@ -114,10 +136,15 @@ export default class Draw extends Component {
       this.setState({pixels: [...this.state.pixels, readded[0]]})
     }
   }
+
+  handleColorPick = (ev) => {
+    this.setState({color: `rgba${ev.rgb.r}`})
+  }
   
   render() {
     return (
     <Grid item={true}>
+      {/* <SketchPicker onChange={this.handleColorPick} /> */}
       <Preview 
         ref="preview" 
         pixels={this.state.pixels} 

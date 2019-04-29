@@ -61,7 +61,7 @@ class Navbar extends React.Component {
             </Typography>
 
             <IconButton color="inherit">
-              <Brush />
+              <Brush onClick={this.props.history.push('/draw')} />
             </IconButton>
 
             <IconButton

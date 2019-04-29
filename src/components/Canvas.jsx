@@ -71,6 +71,10 @@ export default class Canvas extends Component {
     }
   }
 
+  handleMouseLeave = () => {
+    this.props.toggleDrawing(false)
+  }
+
   clearCanvas = () => {
     let canvas = ReactDOM.findDOMNode(this.refs.canvas);
     let ctx = canvas.getContext('2d');
@@ -86,6 +90,7 @@ export default class Canvas extends Component {
       onMouseDown={this.handleMouseDown} 
       onMouseUp={this.handleMouseUp} 
       onMouseMove={this.handleMouseMove}
+      onMouseLeave={this.handleMouseLeave}
     ></canvas>)
   }
 }
