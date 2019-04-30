@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import Grid from '@material-ui/core/Grid';
 import Canvas from '../Canvas';
 import Preview from '../Preview';
@@ -140,6 +141,16 @@ export default class Draw extends Component {
   handleColorPick = (ev) => {
     this.setState({color: `rgba${ev.rgb.r}`})
   }
+
+  save = () => {
+    let canvas = ReactDOM.findDOMNode(this.refs.preview);
+    let base64 = canvas.toDataURL();
+    var link = document.createElement("a");
+
+    link.setAttribute('href', base64);
+    link.setAttribute('download', 'pixemoji.png');
+    link.click();
+  }
   
   render() {
     return (
@@ -153,6 +164,7 @@ export default class Draw extends Component {
       />
       <Button onClick={this.undo}><Undo /></Button>
       <Button onClick={this.redo}><Redo /></Button>
+      <Button variant="contained" color="primary" onClick={this.save}>Save</Button>
       <Canvas 
         ref="canvas" 
         scale={this.state.scale} 
