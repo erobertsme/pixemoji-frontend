@@ -19,7 +19,7 @@ export default class Preview extends Component {
     this.props.pixels.forEach(pixelGroup => {
       pixelGroup.forEach(pixel => {
         ctx.fillStyle = pixel.color;
-        ctx.fillRect(pixel.x/this.props.scale, pixel.y/this.props.scale, 1, 1);
+        ctx.fillRect(pixel.x, pixel.y, 1, 1);
       })
     })
   }

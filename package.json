@@ -10,6 +10,7 @@
     "react": "^16.8.6",
     "react-color": "^2.17.1",
     "react-dom": "^16.8.6",
+    "react-draggable": "^3.3.0",
     "react-icons": "^3.6.1",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0"

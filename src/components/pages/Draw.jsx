@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom'
 import Grid from '@material-ui/core/Grid';
 import Canvas from '../Canvas';
 import Preview from '../Preview';
-import { Undo, Redo, Clear } from '@material-ui/icons'
+import { Undo, Redo, Clear, ZoomIn, ZoomOut } from '@material-ui/icons'
 import Button from '@material-ui/core/Button'
 import { SketchPicker } from 'react-color';
+import Draggable from 'react-draggable';
 // import ColorSelector from ''
 
 export default class Draw extends Component {
@@ -33,7 +34,7 @@ export default class Draw extends Component {
     const scale = this.state.scale
     const rect = ev.target.getBoundingClientRect()
     const [mouseX, mouseY] = [Math.floor(ev.clientX - rect.left), Math.floor(ev.clientY - rect.top)]
-    const [cellX, cellY] = [(Math.floor(mouseX / scale) * scale), (Math.floor(mouseY / scale) * scale)]
+    const [cellX, cellY] = [Math.floor(mouseX / scale), Math.floor(mouseY / scale)]
 
     // console.log('w,h', w, h)
     // console.log('mouseX,mouseY', mouseX, mouseY)
@@ -68,26 +69,23 @@ export default class Draw extends Component {
     this.setState({size: newSize})
   }
 
-  changeScale = (newScale) => {
-    const prevScale = this.state.scale
-    this.state.pixels.map(pixelGroup => {
-      return pixelGroup.map(pixel => {
-        return {
-          x: (pixel.x / prevScale) * newScale, 
-          y: (pixel.y / prevScale) * newScale, 
-          color: pixel.color
-        }
-      })
-    })
+  setScale = (int) => {
+    this.setState({ scale: int })
+  }
+
+  increaseScale = () => {
+    this.setState({ scale: this.state.scale+1 })
+  }
+
+  decreaseScale = () => {
+    this.setState({ scale: this.state.scale-1 })
   }
 
   checkDuplicate = (newPixel) => {
-    const result = this.state.pixels.map(pixelGroup => {
-      return pixelGroup.some(pixel => {
-        return (pixel.x === newPixel.x && pixel.y === newPixel.y && pixel.color === newPixel.color)
-      })
+    const result = this.state.pixels.flat().some(pixel => {
+      return (pixel.x === newPixel.x && pixel.y === newPixel.y && pixel.color === newPixel.color)
     })
-    return result.some(i => i === true)
+    return result
   }
 
   detectSkip = (lastPixel, newPixel) => {
@@ -159,28 +157,34 @@ export default class Draw extends Component {
   
   render() {
     return (
-    <Grid item={true}>
-      <SketchPicker color={this.state.color} onChangeComplete={this.handleColorPick} />
-      <Preview 
-        ref="preview" 
-        pixels={this.state.pixels} 
-        size={this.state.size} 
-        scale={this.state.scale} 
-      />
-      <Button onClick={this.undo}><Undo /></Button>
-      <Button onClick={this.redo}><Redo /></Button>
-      <Button onClick={this.clear}><Clear /></Button>
-      <Button variant="contained" color="primary" onClick={this.save}>Save</Button>
-      <Canvas 
-        ref="canvas" 
-        scale={this.state.scale} 
-        size={(this.state.size*this.state.scale)} 
-        pixels={this.state.pixels} 
-        handleEvent={this.handleEvent}
-        toggleDrawing={this.toggleDrawing}
-        isDrawing={this.state.isDrawing}
-        grid={this.state.grid}
-      />
+    <Grid container={true} alignItems="center" justify="center">
+      <Grid id="tool-container" container={true} alignItems="center" justify="center">
+        <Preview 
+          ref="preview" 
+          pixels={this.state.pixels} 
+          size={this.state.size} 
+          scale={this.state.scale} 
+        />
+        <Button onClick={this.increaseScale}><ZoomIn /></Button>
+        <Button onClick={this.decreaseScale}><ZoomOut /></Button>
+        <Button onClick={this.undo}><Undo /></Button>
+        <Button onClick={this.redo}><Redo /></Button>
+        <Button onClick={this.clear}><Clear /></Button>
+        <Button variant="contained" color="primary" onClick={this.save}>Save</Button>
+      </Grid>
+      <Grid container={true} alignItems="center" justify="center">
+        <Canvas 
+          ref="canvas" 
+          scale={this.state.scale} 
+          size={(this.state.size*this.state.scale)} 
+          pixels={this.state.pixels} 
+          handleEvent={this.handleEvent}
+          toggleDrawing={this.toggleDrawing}
+          isDrawing={this.state.isDrawing}
+          grid={this.state.grid}
+        />
+        <Draggable handle="#drag-bar"><div id="color-picker"><div id="drag-bar"></div><SketchPicker color={this.state.color} onChangeComplete={this.handleColorPick} /></div></Draggable>
+      </Grid>
     </Grid>
     )
   }

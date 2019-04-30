@@ -1,8 +1,35 @@
 main {
   margin-top: 64px;
   padding: 10vh 10vw;
+  position: relative;
+}
+
+main > div > div > div:nth-child(2) {
+  padding: 20px;
 }
 
 canvas {
   border: 1px solid black;
+}
+
+.color-picker {
+  position: absolute;
+  top: 40vh;
+  left: 64px;
+}
+
+#drag-bar {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  justify-items: center;
+  align-items: flex-start;
+  background-color: white;
+  border-radius: 5px 5px 0 0;
+  max-width: 220px;
+  border: 1px solid grey;
+}
+
+#tool-container {
+  max-height: 200px;
 }
