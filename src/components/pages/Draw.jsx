@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Grid from '@material-ui/core/Grid';
 import Canvas from '../Canvas';
 import Preview from '../Preview';
-import { Undo, Redo } from '@material-ui/icons'
+import { Undo, Redo, Clear } from '@material-ui/icons'
 import Button from '@material-ui/core/Button'
 import { SketchPicker } from 'react-color';
 // import ColorSelector from ''
@@ -49,12 +49,12 @@ export default class Draw extends Component {
       let lastPixel = this.state.pixels[this.state.pixels.length-1][this.state.pixels[this.state.pixels.length-1].length-1]
       this.detectSkip(lastPixel, newPixel)
       this.state.pixels[this.state.pixels.length-1].push(newPixel)
-      this.setState({pixels: [...this.state.pixels]})
+      this.setState({ pixels: [...this.state.pixels] })
     } else {
-      this.setState({pixels: [...this.state.pixels, [newPixel]]})
+      this.setState({ pixels: [...this.state.pixels, [newPixel]] })
     }
 
-    this.setState({redo: []})
+    this.setState({ redo: [] })
     
   }
 
@@ -127,19 +127,19 @@ export default class Draw extends Component {
   undo = () => {
     if (this.state.pixels.length > 0) {
       const removed = this.state.pixels.splice(-1)
-      this.setState({redo: [...this.state.redo, removed[0]]})
+      this.setState({ redo: [...this.state.redo, removed[0]] })
     }
   }
 
   redo = () => {
     if (this.state.redo.length > 0) {
       const readded = this.state.redo.splice(-1)
-      this.setState({pixels: [...this.state.pixels, readded[0]]})
+      this.setState({ pixels: [...this.state.pixels, readded[0]] })
     }
   }
 
   handleColorPick = (ev) => {
-    this.setState({color: ev.rgb})
+    this.setState({ color: ev.rgb })
   }
 
   save = () => {
@@ -150,6 +150,11 @@ export default class Draw extends Component {
     link.setAttribute('href', base64);
     link.setAttribute('download', 'pixemoji.png');
     link.click();
+    link.remove()
+  }
+
+  clear = () => {
+    this.setState({ pixels: [], redo: [...this.state.pixels] })
   }
   
   render() {
@@ -164,6 +169,7 @@ export default class Draw extends Component {
       />
       <Button onClick={this.undo}><Undo /></Button>
       <Button onClick={this.redo}><Redo /></Button>
+      <Button onClick={this.clear}><Clear /></Button>
       <Button variant="contained" color="primary" onClick={this.save}>Save</Button>
       <Canvas 
         ref="canvas" 
