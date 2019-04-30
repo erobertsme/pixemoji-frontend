@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Grid from '@material-ui/core/Grid';
 import Canvas from '../Canvas';
 import Preview from '../Preview';
-import { Undo, Redo, Clear, ZoomIn, ZoomOut } from '@material-ui/icons'
+import { Undo, Redo, Clear, ZoomIn, ZoomOut, ColorLens } from '@material-ui/icons'
 import Button from '@material-ui/core/Button'
 import { SketchPicker } from 'react-color';
 import Draggable from 'react-draggable';
@@ -20,8 +20,10 @@ export default class Draw extends Component {
       on: true,
       color: 'rgba(0,0,0,0.1)'
     },
+    showColorPicker: false,
     pixels: [],
-    redo: []
+    redo: [],
+    undo: [],
   }
 
   toggleDrawing = (bool) => {
@@ -69,6 +71,10 @@ export default class Draw extends Component {
     this.setState({size: newSize})
   }
 
+  toggleColorPicker = () => {
+    this.setState({ showColorPicker: !this.state.showColorPicker })
+  }
+
   setScale = (int) => {
     this.setState({ scale: int })
   }
@@ -78,7 +84,9 @@ export default class Draw extends Component {
   }
 
   decreaseScale = () => {
-    this.setState({ scale: this.state.scale-1 })
+    if (this.state.scale > 1) {
+      this.setState({ scale: this.state.scale-1 })
+    }
   }
 
   checkDuplicate = (newPixel) => {
@@ -154,6 +162,16 @@ export default class Draw extends Component {
   clear = () => {
     this.setState({ pixels: [], redo: [...this.state.pixels] })
   }
+
+  getColorPickerButtonCoords = () => {
+    const button = document.getElementById('color-picker-button')
+    const buttonTop = button.offsetTop
+    const buttonLeft = button.offsetLeft
+    const buttonHeight = button.offsetHeight
+    const buttonWidth = button.offsetWidth
+
+    return {x: (buttonTop + buttonHeight),y: (buttonLeft + buttonWidth) }
+  }
   
   render() {
     return (
@@ -165,6 +183,7 @@ export default class Draw extends Component {
           size={this.state.size} 
           scale={this.state.scale} 
         />
+        <Button onClick={this.toggleColorPicker} id="color-picker-button"><ColorLens /></Button>
         <Button onClick={this.increaseScale}><ZoomIn /></Button>
         <Button onClick={this.decreaseScale}><ZoomOut /></Button>
         <Button onClick={this.undo}><Undo /></Button>
@@ -183,8 +202,19 @@ export default class Draw extends Component {
           isDrawing={this.state.isDrawing}
           grid={this.state.grid}
         />
-        <Draggable handle="#drag-bar"><div id="color-picker"><div id="drag-bar"></div><SketchPicker color={this.state.color} onChangeComplete={this.handleColorPick} /></div></Draggable>
       </Grid>
+      { this.state.showColorPicker ? (
+          <Draggable 
+            id="draggable" 
+            handle="#drag-bar"
+            defaultPosition={{x: -22, y: -700}}
+          >
+            <div id="color-picker">
+              <div id="drag-bar"></div>
+              <SketchPicker color={this.state.color} onChangeComplete={this.handleColorPick} />
+            </div>
+          </Draggable>
+        ) : null }
     </Grid>
     )
   }
