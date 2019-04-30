@@ -12,7 +12,7 @@ export default class Draw extends Component {
   state = {
     scale: 10,
     size: 64,
-    color: 'rgba(255,0,0,1)',
+    color: {r: 255, g: 0, b: 0, a: 1},
     backgroundColor: '',
     isDrawing: false,
     grid: {
@@ -39,7 +39,7 @@ export default class Draw extends Component {
     // console.log('mouseX,mouseY', mouseX, mouseY)
     // console.log('cellX,cellY', cellX, cellY)
 
-    const newPixel = {x: cellX, y: cellY, color: this.state.color}
+    const newPixel = {x: cellX, y: cellY, color: `rgba(${this.state.color.r},${this.state.color.g},${this.state.color.b},${this.state.color.a}`}
 
     if (this.checkDuplicate(newPixel)) {
       return
@@ -139,7 +139,7 @@ export default class Draw extends Component {
   }
 
   handleColorPick = (ev) => {
-    this.setState({color: `rgba${ev.rgb.r}`})
+    this.setState({color: ev.rgb})
   }
 
   save = () => {
@@ -155,7 +155,7 @@ export default class Draw extends Component {
   render() {
     return (
     <Grid item={true}>
-      {/* <SketchPicker onChange={this.handleColorPick} /> */}
+      <SketchPicker color={this.state.color} onChangeComplete={this.handleColorPick} />
       <Preview 
         ref="preview" 
         pixels={this.state.pixels} 
