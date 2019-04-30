@@ -33,7 +33,7 @@ export default class Draw extends Component {
     // Thanks Allen! @allen-woods
     const scale = this.state.scale
     const rect = ev.target.getBoundingClientRect()
-    const [mouseX, mouseY] = [Math.floor(ev.clientX - rect.left), Math.floor(ev.clientY - rect.top)]
+    const [mouseX, mouseY] = [Math.floor(ev.clientX - rect.left)-1, Math.floor(ev.clientY - rect.top)-1]
     const [cellX, cellY] = [Math.floor(mouseX / scale), Math.floor(mouseY / scale)]
 
     // console.log('w,h', w, h)
