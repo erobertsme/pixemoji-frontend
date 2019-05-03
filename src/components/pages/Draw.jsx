@@ -7,7 +7,6 @@ import { Undo, Redo, Clear, ZoomIn, ZoomOut, ColorLens } from '@material-ui/icon
 import Button from '@material-ui/core/Button'
 import { SketchPicker } from 'react-color';
 import Draggable from 'react-draggable';
-// import ColorSelector from ''
 
 export default class Draw extends Component {
   state = {
@@ -21,6 +20,7 @@ export default class Draw extends Component {
       color: 'rgba(0,0,0,0.1)'
     },
     showColorPicker: false,
+    colorPickerCoords: {}, 
     pixels: [],
     redo: [],
     undo: [],
@@ -71,8 +71,9 @@ export default class Draw extends Component {
     this.setState({size: newSize})
   }
 
-  toggleColorPicker = () => {
-    this.setState({ showColorPicker: !this.state.showColorPicker })
+  toggleColorPicker = (ev) => {
+    const [mouseX, mouseY] = [Math.floor(ev.clientX), Math.floor(ev.clientY)]
+    this.setState({ showColorPicker: !this.state.showColorPicker, colorPickerCoords: {x: mouseX, y: mouseY} })
   }
 
   setScale = (int) => {
@@ -162,16 +163,6 @@ export default class Draw extends Component {
   clear = () => {
     this.setState({ pixels: [], redo: [...this.state.pixels] })
   }
-
-  getColorPickerButtonCoords = () => {
-    const button = document.getElementById('color-picker-button')
-    const buttonTop = button.offsetTop
-    const buttonLeft = button.offsetLeft
-    const buttonHeight = button.offsetHeight
-    const buttonWidth = button.offsetWidth
-
-    return {x: (buttonTop + buttonHeight),y: (buttonLeft + buttonWidth) }
-  }
   
   render() {
     return (
@@ -207,14 +198,14 @@ export default class Draw extends Component {
           <Draggable 
             id="draggable" 
             handle="#drag-bar"
-            defaultPosition={{x: -22, y: -700}}
+            defaultPosition={this.state.colorPickerCoords}
           >
             <div id="color-picker">
               <div id="drag-bar"></div>
               <SketchPicker color={this.state.color} onChangeComplete={this.handleColorPick} />
             </div>
           </Draggable>
-        ) : null }
+      ) : null }
     </Grid>
     )
   }

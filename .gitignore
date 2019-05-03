@@ -2,3 +2,6 @@
 yarn.lock
 /build
 /.netlify
+/images/stickers
+/images/all
+/images

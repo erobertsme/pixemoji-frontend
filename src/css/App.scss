@@ -13,16 +13,6 @@ canvas {
   cursor: crosshair;
 }
 
-#color-picker-button {
-  position: relative;
-}
-
-.color-picker {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
 #drag-bar {
   display: flex;
   flex-direction: column;
@@ -31,8 +21,13 @@ canvas {
   align-items: flex-start;
   background-color: white;
   border-radius: 5px 5px 0 0;
-  max-width: 220px;
+  width: 222px;
   border: 1px solid grey;
+  transform: translateX(-1px);
+}
+
+.sketch-picker {
+  border-radius: 0 0 5px 5px !important;
 }
 
 #tool-container {

@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { withRouter } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -27,6 +27,10 @@ const styles = {
 };
 
 class Navbar extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
   state = {
     auth: true,
     anchorEl: null,
@@ -39,6 +43,16 @@ class Navbar extends React.Component {
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
+
+  handleLink = (ev) => {
+    console.log(ev.target)
+    // this.props.history.push(ev.target.attributes.url.value);
+  }
+
+  handleMenuItem = (ev) => {
+    this.handleLink(ev);
+    this.handleClose();
+  }
 
   render() {
     const { classes } = this.props;
@@ -60,8 +74,8 @@ class Navbar extends React.Component {
               Pixemoji
             </Typography>
 
-            <IconButton color="inherit">
-              <Brush />
+            <IconButton url="/draw" onClick={this.handleLink} color="inherit">
+              <Brush url="/draw" />
             </IconButton>
 
             <IconButton
@@ -88,12 +102,12 @@ class Navbar extends React.Component {
             >
             {
               auth ?
-              (<>
-              <MenuItem onClick={this.handleClose}>My Emojis</MenuItem>
-              <MenuItem onClick={this.handleClose}>My Account</MenuItem>
-              </>)
+              [
+              <MenuItem url={`/user/${this.state.user}/emojis`} onClick={this.handleLink}>My Emojis</MenuItem>,
+              <MenuItem url="/account" onClick={this.handleLink}>My Account</MenuItem>
+              ]
               :
-              <MenuItem onClick={this.handleClose}>Login/Signup</MenuItem>
+              <MenuItem url="/account" onClick={this.handleLink}>Login/Signup</MenuItem>
             }
             </Menu>
           </Toolbar>
@@ -103,8 +117,4 @@ class Navbar extends React.Component {
   }
 }
 
-Navbar.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(Navbar);
+export default withStyles(styles)(withRouter(Navbar));
